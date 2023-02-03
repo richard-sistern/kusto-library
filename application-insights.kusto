@@ -1,0 +1,7 @@
+// Application Insights
+
+// Render scatter chart of requests in 10min chunks 
+requests
+| where name contains "post"
+| summarize avg(duration) by bin(timestamp, 10m)
+| render scatterchart
