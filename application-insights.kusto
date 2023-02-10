@@ -5,3 +5,9 @@ requests
 | where name contains "post"
 | summarize avg(duration) by bin(timestamp, 10m)
 | render scatterchart
+
+// List 404s by URL, Count
+requests
+| where resultCode == 404
+| summarize Count=sum(itemCount) by url
+| sort by Count 
