@@ -7,7 +7,9 @@ requests
 | render scatterchart
 
 // List 404s by URL, Count
+// https://swimburger.net/blog/azure/querying-404s-using-kusto-and-log-analytics-in-azure-application-insights
 requests
 | where resultCode == 404
 | summarize Count=sum(itemCount) by url
-| sort by Count 
+| sort by Count
+
