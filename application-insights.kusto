@@ -1,5 +1,14 @@
 // Application Insights
 
+// Show n exceptions
+exceptions
+| take 10
+
+// Count of exceptions per day
+exceptions
+| summarize count() by bin(timestamp, 1d)
+| render timechart 
+
 // Render scatter chart of requests in 10min chunks 
 requests
 | where name contains "post"
@@ -13,3 +22,6 @@ requests
 | summarize Count=sum(itemCount) by url
 | sort by Count
 
+// Display count of result codes based on operation, instance and earliest timestamp
+requests
+| summarize min(timestamp), count() by resultCode, operation_Name, cloud_RoleInstance
