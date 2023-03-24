@@ -1,0 +1,50 @@
+// Kusto: Azure Resource Graph
+
+// Unused Public IPs
+Resources
+| where type =~ 'microsoft.network/publicipaddresses' 
+| where properties.ipConfiguration =~ ''
+| project name, resourceGroup, subscriptionId, location, sku.name, sku.tier, tags, id
+
+// Public IP usage
+Resources
+| where type contains 'publicIPAddresses' and isnotempty(properties.ipAddress)
+| project name,id= split(properties.ipConfiguration.id,"providers",1),ip_address=properties.ipAddress
+
+// Resource location
+Resources
+| summarize count() by location
+
+Resources
+| where location == 'westeurope'
+| project name, type, resourceGroup, subscriptionId
+
+// VMs
+Resources
+| where type == 'microsoft.compute/virtualmachines'
+| extend vmSize = tolower(properties.hardwareProfile.vmSize)
+| extend powerState = tostring(properties.extended.instanceView.powerState.code)
+| project name, vmSize, subscriptionId, resourceGroup, powerState
+| join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
+| project name, vmSize, subName, resourceGroup, powerState
+
+Resources
+| where type == 'microsoft.compute/disks'
+| extend tier = sku.name
+| extend performance = properties.tier
+| extend sizeGB = format_bytes(tolong(properties.diskSizeBytes), 0, "GB")
+| join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
+| join kind=leftouter (Resources | where type=='microsoft.compute/virtualmachines' | project managedBy = id, vmName = name) on managedBy
+| project name, sizeGB, tier, performance, subName, resourceGroup, vmName
+
+// App Service Plans
+
+// List plans with tier and redundancy info
+resources
+| where type == "microsoft.web/serverfarms"
+| extend tier = strcat(sku.tier, ": ", sku.name)
+| extend redunant = properties.zoneRedundant
+| extend workers = properties.numberOfWorkers
+| extend workersMax = properties.maximumElasticWorkerCount
+| join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
+| project name, kind, tier, redunant, workers, workersMax,subName

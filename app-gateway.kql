@@ -1,0 +1,15 @@
+// Kusto: Application Gateway
+
+// Select rule with most server errors and summarise by request
+let worstRule = toscalar(AzureDiagnostics
+    | where httpStatus_d between (500 .. 599)
+    | summarize count() by ruleName_s, httpStatus_d
+    | sort by count_
+    | project ruleName_s
+    | limit 1);
+AzureDiagnostics
+| where ruleName_s == worstRule
+| where httpStatus_d between (500 .. 599)
+| summarize count() by requestUri_s, httpStatus_d
+| sort by count_
+| limit 5

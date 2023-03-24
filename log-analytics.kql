@@ -1,0 +1,7 @@
+// Kusto: Log Analytics Workspace
+
+// Show data types creating the most data
+Usage 
+| where IsBillable == true
+| summarize BillableDataGB = sum(Quantity) by Solution, DataType
+| sort by BillableDataGB
