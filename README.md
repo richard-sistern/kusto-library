@@ -1,2 +1,3 @@
-# kusto-examples
-A collection of useful Kusto examples
+# Kusto Library
+
+A collection of (hopefully) useful Kusto examples
