@@ -6,3 +6,13 @@ SigninLogs
 | where Identity !in ('On-Premises Directory Synchronization Service Account') // Known accounts
 | where ResultType != 50126 // Filter out Invalid username or password or Invalid on-premise username or password.
 | summarize by Identity
+
+// Look at SigninLogs and group by sign in results
+SigninLogs
+| summarize count() by ResultType, ResultDescription
+
+// Exclude successful signins and format results with sorting
+SigninLogs
+| where ResultType != "0" 
+| summarize FailedSigninCount = count() by ResultDescription, ResultType 
+| sort by FailedSigninCount desc
