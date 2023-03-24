@@ -1,8 +1,4 @@
-// Application Insights
-
-// Show n exceptions
-exceptions
-| take 10
+// Kusto: Application Insights
 
 // Count of exceptions per day
 exceptions
