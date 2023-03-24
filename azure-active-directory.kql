@@ -1,0 +1,8 @@
+// Kusto: Azure Active Directory
+
+// Logins not using MFA
+SigninLogs 
+| where AuthenticationRequirement == "singleFactorAuthentication"
+| where Identity !in ('On-Premises Directory Synchronization Service Account') // Known accounts
+| where ResultType != 50126 // Filter out Invalid username or password or Invalid on-premise username or password.
+| summarize by Identity
