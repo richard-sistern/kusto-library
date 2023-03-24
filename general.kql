@@ -1,0 +1,5 @@
+//  Kusto: General
+
+// Show n exceptions
+exceptions
+| take 10
