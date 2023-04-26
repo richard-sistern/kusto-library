@@ -48,3 +48,11 @@ resources
 | extend workersMax = properties.maximumElasticWorkerCount
 | join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
 | project name, kind, tier, redunant, workers, workersMax,subName
+
+// APIM
+
+// List resources on legacy platform version
+resources
+| where type == "microsoft.apimanagement/service" and properties.platformVersion == "stv1"
+| join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
+| project name, resourceGroup, properties.platformVersion, subName
