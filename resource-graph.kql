@@ -20,6 +20,16 @@ Resources
 | project name, type, resourceGroup, subscriptionId
 
 // VMs
+
+// Linux VMs with distro and version
+resources
+| where type == "microsoft.compute/virtualmachines"
+| extend os = properties.storageProfile.osDisk.osType
+| extend osName = properties.extended.instanceView.osName
+| extend osVersion = properties.extended.instanceView.osVersion
+| where os == "Linux"
+| project name, os, osName, osVersion
+
 Resources
 | where type == 'microsoft.compute/virtualmachines'
 | extend vmSize = tolower(properties.hardwareProfile.vmSize)
