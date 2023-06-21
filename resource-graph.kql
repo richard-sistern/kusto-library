@@ -66,3 +66,18 @@ resources
 | where type == "microsoft.apimanagement/service" and properties.platformVersion == "stv1"
 | join kind=inner (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subName=name, subscriptionId) on subscriptionId
 | project name, resourceGroup, properties.platformVersion, subName
+
+// Databases
+
+// List SKU for all databases
+resources
+| where type == "microsoft.sql/servers/databases"
+| join kind=inner (
+    resourcecontainers
+    | where type == 'microsoft.resources/subscriptions'
+    | project subscriptionId, subscriptionName = name)
+    on subscriptionId
+| extend skuName = sku.name
+| extend skuTier = sku.tier
+| extend skuCapacity = sku.capacity
+| project subscriptionName, resourceGroup, name, skuName, skuTier, skuCapacity
