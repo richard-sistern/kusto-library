@@ -81,3 +81,17 @@ resources
 | extend skuTier = sku.tier
 | extend skuCapacity = sku.capacity
 | project subscriptionName, resourceGroup, name, skuName, skuTier, skuCapacity
+
+// Storage
+
+// Show accounts allowing public access
+resources
+| where type == "microsoft.storage/storageaccounts"
+| extend allowBlobPublicAccess = properties.allowBlobPublicAccess
+| where allowBlobPublicAccess == "true"
+| join kind=inner (
+    resourcecontainers
+    | where type == 'microsoft.resources/subscriptions'
+    | project subscriptionId, subscriptionName = name)
+    on subscriptionId
+| project subscriptionName, resourceGroup, name, kind, allowBlobPublicAccess
