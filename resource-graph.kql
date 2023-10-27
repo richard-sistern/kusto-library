@@ -82,6 +82,17 @@ resources
 | extend skuCapacity = sku.capacity
 | project subscriptionName, resourceGroup, name, skuName, skuTier, skuCapacity
 
+// Cosmos DB with TLS
+resources
+| where type == "microsoft.documentdb/databaseaccounts"
+| join kind=inner (
+    resourcecontainers
+    | where type == 'microsoft.resources/subscriptions'
+    | project subscriptionId, subscriptionName = name)
+    on subscriptionId
+| extend minimalTlsVersion = properties.minimalTlsVersion
+| project subscriptionName, resourceGroup, name, minimalTlsVersion
+
 // Storage
 
 // Show accounts allowing public access
