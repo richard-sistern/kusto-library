@@ -1,4 +1,4 @@
-// Kusto: Azure Active Directory
+// Kusto: Entra
 
 // Logins not using MFA
 SigninLogs 
